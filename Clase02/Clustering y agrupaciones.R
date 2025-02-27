@@ -41,14 +41,7 @@ superior <- Q3 + 1.5 * IQR_valor
 # Identificar outliers
 outliers_iqr <- which(mtcars$mpg < inferior | mtcars$mpg > superior)
 
-# Visualización
-ggplot(mtcars, aes(x = wt, y = mpg)) +
-  geom_point(color = "blue", size = 3) +
-  geom_point(data = mtcars[outliers_iqr, ], aes(x = wt, y = mpg),
-             color = "red", size = 4) +
-  ggtitle("Outliers en mpg detectados con IQR") +
-  xlab("Peso (wt)") + ylab("Millas por galón (mpg)") +
-  theme_minimal()
+z
 
 
 ###############
