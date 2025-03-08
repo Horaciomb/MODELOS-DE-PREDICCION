@@ -160,6 +160,7 @@ k_values <- 2:10
 # Crear una lista para almacenar los valores del Índice de Silueta
 silhouette_scores <- numeric(length(k_values))
 
+## Variacion de distintos valores
 # Iterar sobre los diferentes valores de k
 for (i in 1:length(k_values)) {
   kmeans_result <- kmeans(data_clean,
