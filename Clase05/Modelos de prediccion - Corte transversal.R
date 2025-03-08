@@ -110,10 +110,12 @@ data_scaled <- scale(data_final[, resto_columnas])
 
 #Unamos las 2 bases
 data_scaled <- cbind(data_scaled, data_final[, dummy_columns_city])
-## Hasta este punto ya estamos listos para la regresion
-## pasamos de la bd con 14 variables y una categorica, y ahora transformamos a dummys y luego la escalamos las demas varabesl no categorias
+## Hasta este punto ya estamos listos para la regression
+## pasamos de la bd con 14 variables y una categorization, y ahora transformamos a dummys y luego la escalamos las demas varabesl no categorias
 ## ya esta lista para la predicción
 ## escalamos para que tengan un mejor comportamiento.
+
+
 ###Valores nulos
 # Contar los valores NA por cada columna
 na_por_columna <- apply(data_scaled, 2, function(x) sum(is.na(x)))
