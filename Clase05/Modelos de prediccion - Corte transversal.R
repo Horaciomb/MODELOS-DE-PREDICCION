@@ -104,6 +104,7 @@ nombres_generales <- names(data_final)
 # Hacemos una diferencia de esas listas
 resto_columnas <- setdiff(nombres_generales, dummy_columns_city)
 
+## Aca la intencion es solo escalar las que no son dicotomicas
 # Escalamos solo aquellas que no son dummies
 data_scaled <- scale(data_final[, resto_columnas])
 
