@@ -16,7 +16,7 @@ library(caret)
 ####APERTURA####
 ################
 #Abrimos la base de datos
-data <- read.csv("G:/My Drive/Modelos de prediccion - Febrero 2025/Bases de datos/data.csv")
+data <- read.csv("D:/Diplomado UPB/Prediccion Analitica/Bases de datos/Bases de datos/data.csv")
 
 
 #####################################
@@ -94,7 +94,7 @@ data <- data %>%
 data_final <- dummy_cols(data, 
                          remove_first_dummy = FALSE,
                          remove_selected_columns = TRUE)
-
+## Acá vamos a escalar, es más sencillo para trabajar
 # Hacemos una lista con las dummies
 dummy_columns_city <- grep("city_", names(data_final), value = TRUE)
 
