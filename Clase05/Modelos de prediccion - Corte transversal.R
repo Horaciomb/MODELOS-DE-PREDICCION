@@ -201,6 +201,7 @@ data_clean$distance <- distances
 threshold <- quantile(distances, 0.95)
 outliers <- data_clean %>% filter(distance > threshold)
 
+## detectamos outlier y los volamos loco
 # Eliminamos los outliers de los datos
 filtered_data <- data_clean %>% filter(distance <= threshold)
 
