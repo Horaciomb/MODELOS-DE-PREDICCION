@@ -298,7 +298,7 @@ train_pca <- pca_result$x[, 1:num_componentes]
 # Lo ponemos un formato de dataframe
 train_pca <- as.data.frame(train_pca)
 
-# Añadir el valor de 'mpg' como variable dependiente
+# Añadir el valor de 'price' como variable dependiente
 train_pca$price <- train_data$price
 
 # Ajustar el modelo de regresión lineal con los componentes principales
