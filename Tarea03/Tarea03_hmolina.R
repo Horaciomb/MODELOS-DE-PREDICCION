@@ -65,3 +65,26 @@ par(mfrow = c(1,1))
 n_componentes <- which(varianza_acumulada >= 0.9)[1]
 cat("\nSe necesitan", n_componentes, "componentes para explicar +90% de varianza.\n\n")
 
+# Ejercicio 3: Visualización de Componentes -------------------------------
+# Biplot
+cat("\nEjercicio 3 - Biplot:\n")
+fviz_pca_biplot(pca,
+                col.var = "darkred",
+                col.ind = "darkblue",
+                repel = TRUE,
+                title = "Biplot PCA") +
+  theme_minimal()
+
+# Gráfico en nuevo espacio
+cat("\nGráfico en Espacio de Componentes Principales:\n")
+fviz_pca_ind(pca,
+             col.ind = "contrib",
+             gradient.cols = c("blue", "green", "red"),
+             title = "Datos en PC1-PC2") +
+  theme_minimal()
+
+cat("\nExplicación Final:
+- PC1 captura principalmente variabilidad en cilindrada y potencia (disp, hp)
+- PC2 está relacionado con peso (wt)
+- El biplot muestra cómo las variables originales contribuyen a las componentes principales
+- Los vehículos se agrupan según características técnicas en el nuevo espacio reducido.")
