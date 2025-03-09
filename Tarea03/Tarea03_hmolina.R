@@ -1,90 +1,99 @@
-#################
-####LIBRERIAS####
-#################
-#install.packages("factoextra")
-library(dplyr)
-library(corrplot)
+# ANÁLISIS DE COMPONENTES PRINCIPALES (PCA) - mtcars
+# PAQUETES ----------------------------------------------------------------
+library(tidyverse)
 library(ggplot2)
-library(factoextra)
+library(reshape2)
+library(ggfortify)
 
-# Ejercicio 1: Exploración y Preprocesamiento -----------------------------
-# Seleccionar y estandarizar variables
-datos <- mtcars %>% select(cyl, disp, hp, wt)
-datos_estandar <- scale(datos) # Estandarización (media=0, sd=1)
+# EJERCICIO 1: Exploración y Preprocesamiento -----------------------------
+# Cargar y preparar datos
+data(mtcars)
+vars <- c("cyl", "disp", "hp", "wt")
+datos <- mtcars[, vars]
+
+# Estandarización
+datos_estandar <- scale(datos) %>% as.data.frame()
+colnames(datos_estandar) <- c("cyl", "disp", "hp", "wt")
 
 # Matriz de correlación
-matriz_cor <- cor(datos_estandar)
+cor_matrix <- cor(datos_estandar)
 
-# Mapa de calor
-cat("\nEjercicio 1 - Mapa de Calor de Correlaciones:\n")
-corrplot(matriz_cor, 
-         method = "color",
-         addCoef.col = "black",
-         tl.col = "darkblue",
-         title = "Matriz de Correlación")
+# Heatmap con ggplot
+melted_cor <- melt(cor_matrix)
+ggplot(melted_cor, aes(Var1, Var2, fill = value)) +
+  geom_tile(color = "white") +
+  scale_fill_gradient2(low = "blue", high = "red", mid = "white", 
+                       midpoint = 0, limit = c(-1,1)) +
+  labs(title = "Mapa de Calor de Correlación",
+       x = "", y = "") +
+  theme_minimal() +
+  theme
 
-cat("\nExplicación Ejercicio 1:
-- Las variables muestran fuertes correlaciones (ej: disp vs hp = 0.79)
-- Esto justifica el uso de PCA para reducir dimensionalidad.\n\n")
+# EJERCICIO 2: PCA y Varianza Explicada -----------------------------------
+# Aplicar PCA
+pca <- prcomp(datos_estandar, scale = FALSE)
 
+# Scree Plot (Base R)
+varianza <- pca$sdev^2
+prop_var <- varianza/sum(varianza)
+plot(prop_var, type = "b", 
+     main = "Scree Plot", 
+     xlab = "Componente Principal",
+     ylab = "Proporción de Varianza Explicada")
 
-# Ejercicio 2: PCA y Varianza Explicada -----------------------------------
-pca <- prcomp(datos_estandar, scale = FALSE) # Ya estandarizados
+# Gráfico de Pareto
+df_var <- data.frame(
+  PC = paste0("PC", 1:4),
+  Individual = prop_var,
+  Acumulada = cumsum(prop_var)
+)
 
-# Scree Plot y Pareto
-varianza_explicada <- pca$sdev^2 / sum(pca$sdev^2)
-varianza_acumulada <- cumsum(varianza_explicada)
-
-cat("\nEjercicio 2 - Varianza Explicada:\n")
-print(data.frame(
-  Componente = paste0("PC",1:4),
-  Varianza = round(varianza_explicada,4),
-  Acumulada = round(varianza_acumulada,4)
-))
-
-# Gráficos
-par(mfrow = c(1,2))
-# Scree Plot
-barplot(varianza_explicada,
-        main = "Scree Plot",
-        names.arg = paste0("PC",1:4),
-        ylab = "Varianza Explicada",
-        col = "skyblue")
-
-# Pareto
-barplot(varianza_explicada,
-        main = "Pareto de Varianza",
-        names.arg = paste0("PC",1:4),
-        ylab = "Proporción",
-        col = "lightgreen")
-lines(varianza_acumulada, type = "b", pch = 19, col = "red")
-abline(h = 0.9, lty = 2, col = "blue")
-par(mfrow = c(1,1))
+ggplot(df_var, aes(x = PC)) +
+  geom_col(aes(y = Individual), fill = "steelblue") +
+  geom_line(aes(y = Acumulada, group = 1), color = "red", size = 1) +
+  geom_point(aes(y = Acumulada), color = "red", size = 2) +
+  geom_hline(yintercept = 0.9, linetype = "dashed", color = "darkgreen") +
+  scale_y_continuous(labels = scales::percent) +
+  labs(title = "Varianza Explicada - Diagrama de Pareto",
+       y = "Proporción de Varianza") +
+  theme_minimal()
 
 # Componentes para 90% de varianza
-n_componentes <- which(varianza_acumulada >= 0.9)[1]
-cat("\nSe necesitan", n_componentes, "componentes para explicar +90% de varianza.\n\n")
+n_comp <- which(cumsum(prop_var) >= 0.9)[1]
+cat("Se necesitan", n_comp, "componentes para explicar el 90% de la varianza")
 
-# Ejercicio 3: Visualización de Componentes -------------------------------
-# Biplot
-cat("\nEjercicio 3 - Biplot:\n")
-fviz_pca_biplot(pca,
-                col.var = "darkred",
-                col.ind = "darkblue",
-                repel = TRUE,
-                title = "Biplot PCA") +
+# EJERCICIO 3: Visualización ----------------------------------------------
+# Biplot con etiquetas
+autoplot(pca, data = mtcars, 
+         loadings = TRUE, loadings.label = TRUE,
+         loadings.label.size = 4, loadings.label.colour = "darkblue",
+         label = TRUE, label.size = 3) +
+  ggtitle("Biplot - Componentes Principales") +
   theme_minimal()
 
-# Gráfico en nuevo espacio
-cat("\nGráfico en Espacio de Componentes Principales:\n")
-fviz_pca_ind(pca,
-             col.ind = "contrib",
-             gradient.cols = c("blue", "green", "red"),
-             title = "Datos en PC1-PC2") +
-  theme_minimal()
+# Gráfico de componentes principales
+df_pca <- data.frame(
+  PC1 = pca$x[,1],
+  PC2 = pca$x[,2],
+  Modelo = rownames(mtcars)
+)
 
-cat("\nExplicación Final:
-- PC1 captura principalmente variabilidad en cilindrada y potencia (disp, hp)
-- PC2 está relacionado con peso (wt)
-- El biplot muestra cómo las variables originales contribuyen a las componentes principales
-- Los vehículos se agrupan según características técnicas en el nuevo espacio reducido.")
+ggplot(df_pca, aes(PC1, PC2, label = Modelo)) +
+  geom_point(color = "firebrick", size = 3) +
+  geom_text(hjust = 0, vjust = 1.5, size = 3) +
+  labs(title = "Espacio reducido por PCA",
+       x = paste0("PC1 (", round(prop_var[1]*100, 1), "%)"),
+       y = paste0("PC2 (", round(prop_var[2]*100, 1), "%)")) +
+  theme_minimal() +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  geom_vline(xintercept = 0, linetype = "dashed")
+
+# Explicación de Resultados -----------------------------------------------
+cat("\nINTERPRETACIÓN FINAL:
+1. Correlaciones: Las variables originales están altamente correlacionadas (r > 0.8)
+2. Varianza Explicada: PC1 explica", round(prop_var[1]*100, 1), "% de la varianza
+3. Biplot: 
+   - Vehículos con mayor peso (wt) y cilindrada (disp) están a la izquierda
+   - Coches deportivos (Maserati Bora) tienen valores altos en PC1
+   - El peso (wt) es la variable que más contribuye a PC1
+4. Componentes: Con 2 componentes explicamos", round(cumsum(prop_var)[2]*100, 1), "% de la varianza")
