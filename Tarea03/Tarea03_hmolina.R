@@ -27,7 +27,7 @@ ggplot(melted_cor, aes(Var1, Var2, fill = value)) +
   labs(title = "Mapa de Calor de Correlación",
        x = "", y = "") +
   theme_minimal() +
-  theme
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 # EJERCICIO 2: PCA y Varianza Explicada -----------------------------------
 # Aplicar PCA
