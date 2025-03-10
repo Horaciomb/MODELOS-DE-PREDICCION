@@ -15,3 +15,6 @@
 
 
     install.packages(c("tidyverse", "dplyr", "ggplot2", "cluster", "dbscan", "isotree", "car", "caret"))`
+
+
+    ** Solo queria hacer un cambio losiento :c**
