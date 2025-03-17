@@ -61,7 +61,7 @@ summary(logit_model)
 #################################
 # Predicciones en test
 test_data$pred_prob <- predict(logit_model, newdata = test_data, type = "response")
-test_data$pred_class <- ifelse(test_data$pred_prob > 0.5, 1, 0)
+test_data$pred_class <- ifelse(test_data$pred_prob > 0.3, 1, 0)
 
 # Matriz de Confusión
 conf_matrix <- table(Real = test_data$Diagnosis, Predicho = test_data$pred_class)
