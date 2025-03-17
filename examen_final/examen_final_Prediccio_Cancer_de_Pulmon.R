@@ -53,7 +53,7 @@ ggplot(data, aes(x=factor(FINGER_DISCOLORATION))) +
 
 # Distribución de Enfermedades Pulmonares
 ggplot(data, aes(x=factor(PULMONARY_DISEASE))) +
-  geom_bar(fill="lightcoral", color="black") +
+  geom_bar(fill="blue", color="black") +
   labs(title="Distribución de Enfermedades Pulmonares", x="Enfermedades Pulmonares", y="Frecuencia") +
   scale_x_discrete(labels=c("No", "Sí"))
 table(data$PULMONARY_DISEASE) 
@@ -76,6 +76,16 @@ hist(data$AGE, main = "Distribución de Edad", xlab = "Edad", col = "blue")
 hist(data$ENERGY_LEVEL, main = "Distribución de Nivel de Energía", xlab = "Nivel de Energía", col = "green")
 
 
+
+library(reshape2)
+cor_matrix_melted <- melt(cor_matrix)
+
+# Graficar el heatmap
+ggplot(cor_matrix_melted, aes(Var1, Var2, fill=value)) +
+  geom_tile() +
+  scale_fill_gradient2(low="red", high="blue", mid="white", midpoint=0) +
+  labs(title="Matriz de Correlación entre Variables Numéricas", x="", y="") +
+  theme(axis.text.x = element_text(angle=45, hjust=1))
 #################################
 #### PREPROCESAMIENTO DE DATOS ###
 #################################
